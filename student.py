@@ -1,25 +1,6 @@
 import sqlite3
 
 
-def create_table():
-    create_table = """CREATE TABLE IF NOT EXISTS Students (
-        ID INTEGER PRIMARY KEY, 
-        Name text NOT NULL, 
-        Age int NOT NULL, 
-        Grade text NOT NULL,
-        Subjects text NOT NULL
-    )"""
-
-    try:
-        with sqlite3.connect("students.db") as conn:
-            cursor = conn.cursor()
-            cursor.execute(create_table)
-            conn.commit()
-            print("Table created successfully.")
-    except sqlite3.OperationalError as e:
-        print("Failed to create tables: ", e)
-
-
 def write_command(command):
     try:
         with sqlite3.connect("students.db") as conn:
@@ -29,6 +10,17 @@ def write_command(command):
             print("Command executed successfully.")
     except sqlite3.OperationalError as e:
         print("Failed to execute command: ", e)
+
+
+def create_table():
+    create_table = """CREATE TABLE IF NOT EXISTS Students (
+        ID INTEGER PRIMARY KEY, 
+        Name text NOT NULL, 
+        Age int NOT NULL, 
+        Grade text NOT NULL,
+        Subjects text NOT NULL
+    )"""
+    write_command(create_table)
 
 
 def read_command(command):
@@ -44,18 +36,21 @@ def read_command(command):
         return None
 
 
+def create_student_from_sql(data):
+    id = data[0]
+    name = data[1]
+    age = data[2]
+    grade = data[3]
+    subjects = data[4]
+    return {"ID": id, "Name": name, "Age": age, "Grade": grade, "Subjects": subjects}
+
+
 def load_data():
     command = "SELECT * FROM Students"
     data = read_command(command)
     students = {}
     for data in data:
-        id = data[0]
-        name = data[1]
-        age = data[2]
-        grade = data[3]
-        subjects = data[4]
-        students[id] = {"Name": name, "Age": age, "Grade": grade, "Subjects": subjects}
-
+        students[id] = create_student_from_sql(data)
     return students
 
 
@@ -72,13 +67,7 @@ def view_all_students():
 def view_specifik_student(id):
     sql = f"SELECT * FROM Students WHERE ID = {id}"
     result = read_command(sql)
-    student = {}
-    student["ID"] = result[0][0]
-    student["Name"] = result[0][1]
-    student["Age"] = result[0][2]
-    student["Grade"] = result[0][3]
-    student["Subjects"] = result[0][4]
-    return student
+    return create_student_from_sql(result[0])
 
 
 def update_student(id, name, age, grade, subjects):
