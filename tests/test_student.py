@@ -1,4 +1,4 @@
-import student
+from student import StudentManager
 import unittest
 import os
 import sqlite3
@@ -6,7 +6,12 @@ from unittest.mock import patch
 
 
 class TestConfig(unittest.TestCase):
-    def test_create_table():
+    def setUp(self):
+        self.file_name = "students_test.db"
+        self.student_manager = StudentManager(self.file_name)
+
+    def test_create_table(self):
+        self.assertTrue(self.student_manager.create_table())
         pass
 
     def test_write_command():
