@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>View Specific Student</title>
+    </head>
+    <body>
+        <h2> Select student ID </h2>
+            <form method = "POST" action ="/view_specific_student">
+                ID <select name="ID" id="ID" onchange = "this.form.submit()">
+                    <option value= "" disabled selected>Select ID</option>
+                        {% for id in id_list %}
+                            <option value="{{ id }}" {{ "selected" if id == selected_id else "" }}>
+                            {{ id }}
+                            </option>
+                        {% endfor %}
+                    </select>
+            </form>
+            </br>    
+            </br> 
+            <p><strong>ID:</strong> {{id}}</p>
+            <p><strong>Name:</strong> {{specific_student["Name"]}}</p>
+            <p><strong>Age:</strong> {{ specific_student["Age"]}}</p>
+            <p><strong>Grade:</strong> {{specific_student["Grade"]}}</p>
+            <p><strong>Subjects:</strong> {{ specific_student["Subjects"]}}</p>
+    </body>
+<a href="/"> Home </a>
+</html>

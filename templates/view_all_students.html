@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      h1 {
+        color: green;
+      }
+      h3 {
+        color: red;
+      }
+      th {
+        color: purple;
+      }
+      table {
+        border-collapse: collapse;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Student List</h1>
+    <h3>All students</h3>
+    <table border="1" cellpadding="5">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Grade</th>
+        <th>Subjects</th>
+        <th>Actions</th>
+      </tr>
+      {% if students %}
+        {% for id, student in students.items() %}
+          <tr>
+            <td>{{ id }}</td>
+            <td>{{ student.Name }}</td>
+            <td>{{ student.Age }}</td>
+            <td>{{ student.Grade }}</td>
+            <td>{{ student.Subjects }}</td>
+            <td>
+              <form action="{{ url_for('update_student', id=id) }}" method="GET" style="display:inline;">
+                <button type="submit">Update</button>
+              </form>
+              <form action="{{ url_for('delete_student', id=id) }}" method="GET" style="display:inline;">
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td colspan="6">No students found.</td>
+        </tr>
+      {% endif %}
+    </table>
+    <br />
+    <a href="/">Home</a>
+  </body>
+</html>
