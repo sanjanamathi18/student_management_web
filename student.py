@@ -12,7 +12,7 @@ class StudentManager:
                 cursor = conn.cursor()
                 cursor.execute(command)
                 conn.commit()
-                print("Command executed successfully.")
+                # print("Command executed successfully.")
         except sqlite3.OperationalError as e:
             raise RuntimeError("Failed to execute command: ", e)
 
@@ -31,7 +31,7 @@ class StudentManager:
             with sqlite3.connect(self.file_name) as conn:
                 cursor = conn.cursor()
                 result = cursor.execute(command)
-                print("Command executed successfully.")
+                # print("Command executed successfully.")
                 return result.fetchall()
 
         except sqlite3.OperationalError as e:
@@ -48,9 +48,9 @@ class StudentManager:
     def load_data(self):
         command = "SELECT * FROM Students"
         data = self.read_command(command)
-        students = {}
+        students = []
         for data in data:
-            students[id] = self.create_student_from_sql(data)
+            students.append(self.create_student_from_sql(data))
         return students
 
     def add_student(self, name, age, grade, subjects):

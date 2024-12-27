@@ -1,8 +1,6 @@
 from student import StudentManager
 import unittest
 import os
-import sqlite3
-from unittest.mock import patch
 
 
 class TestStudent(unittest.TestCase):
@@ -10,48 +8,60 @@ class TestStudent(unittest.TestCase):
         self.file_name = "students_test.db"
         self.student_manager = StudentManager(self.file_name)
 
-    def test_create_table(self):
-        pass
-
-    def test_write_command():
-        pass
-
-    def test_read_command():
-        pass
-
-    def test_load_data():
-        pass
-
-    def test_create_student_from_sql():
-        pass
-
     def test_add_student(self):
-        self.student_manager.add_student("Sanjana", 23, "VG", "maths")
+        self.student_manager.add_student("Sanjana", 23, "VG", "Maths")
         students = self.student_manager.view_all_students()
-        self.assertIn("Sanjana", [student["name"] for student in students.items()])
+        self.assertIn("Sanjana", students[0]["Name"])
 
     def test_view_all_students(self):
-        self.student_manager.add_student("Vimal", 23, "VG", "maths")
+        self.student_manager.add_student("Vimal", 23, "VG", "Maths")
         students = self.student_manager.view_all_students()
-        self.assertIn("Vimal", [student["name"] for student in students.items()])
+        self.assertIn("Vimal", students[0]["Name"])
 
     def test_view_specifik_student(self):
-        self.student_manager.add_student("Shan", 23, "VG", "maths")
+        self.student_manager.add_student("Shan", 23, "VG", "Maths")
         student_id = self.student_manager.get_id_list()
-        student = self.student_manager.view_specifik_student(student_id)
+        student = self.student_manager.view_specifik_student(student_id[0])
         self.assertEqual(student["Name"], "Shan")
+        self.assertEqual(student["Age"], 23)
+        self.assertEqual(student["Grade"], "VG")
+        self.assertEqual(student["Subjects"], "Maths")
 
-    def test_update_student():
-        pass
+    def test_update_student(self):
+        self.student_manager.add_student("Shan", 23, "VG", "Maths")
+        student_id = self.student_manager.get_id_list()
+        id = student_id[0]
+        self.student_manager.update_student(id, "San", 26, "Pass", "English")
+        students = self.student_manager.view_all_students()
+        self.assertEqual("San", students[0]["Name"])
+        self.assertEqual(26, students[0]["Age"])
+        self.assertEqual("Pass", students[0]["Grade"])
+        self.assertEqual("English", students[0]["Subjects"])
 
-    def test_delete_student():
-        pass
+    def test_delete_student(self):
+        self.student_manager.add_student("David", 23, "VG", "Maths")
+        student_id = self.student_manager.get_id_list()
+        id = student_id[0]
+        self.assertEqual(id, 1)
+        self.student_manager.delete_student(id)
+        student_id = self.student_manager.get_id_list()
+        self.assertFalse(student_id)
 
-    def test_get_student_name():
-        pass
+    def test_get_student_name(self):
+        self.student_manager.add_student("David", 23, "VG", "Maths")
+        student_id = self.student_manager.get_id_list()
+        id = student_id[0]
+        self.assertEqual(id, 1)
+        self.student_manager.get_student_name(id)
+        self.assertEqual("David", "David")
 
-    def test_get_id_list():
-        pass
+    def test_get_id_list(self):
+        self.student_manager.add_student("Sanju", 23, "VG", "Maths")
+        self.student_manager.add_student("Vim", 25, "Pass", "English")
+        id = self.student_manager.get_id_list()
+        length = len(id)
+        self.assertEqual(2, length)
 
-    def tearDown():
-        pass
+    def tearDown(self):
+        if os.path.exists(self.file_name):
+            os.remove(self.file_name)
