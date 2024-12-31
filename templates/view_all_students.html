@@ -29,18 +29,18 @@
         <th>Actions</th>
       </tr>
       {% if students %}
-        {% for id, student in students.items() %}
+        {% for student in students %}
           <tr>
-            <td>{{ id }}</td>
+            <td>{{ student.ID }}</td>
             <td>{{ student.Name }}</td>
             <td>{{ student.Age }}</td>
             <td>{{ student.Grade }}</td>
             <td>{{ student.Subjects }}</td>
             <td>
-              <form action="{{ url_for('update_student', id=id) }}" method="GET" style="display:inline;">
+              <form action="{{ url_for('update_student', id=student.ID) }}" method="GET" style="display:inline;">
                 <button type="submit">Update</button>
               </form>
-              <form action="{{ url_for('delete_student', id=id) }}" method="GET" style="display:inline;">
+              <form action="{{ url_for('delete_student', id=student.ID) }}" method="GET" style="display:inline;">
                 <button type="submit">Delete</button>
               </form>
             </td>

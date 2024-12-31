@@ -9,7 +9,7 @@
                 ID <select name="ID" id="ID" onchange = "this.form.submit()">
                     <option value= "" disabled selected>Select ID</option>
                         {% for id in id_list %}
-                            <option value="{{ id }}" {{ "selected" if id == selected_id else "" }}>
+                            <option value="{{ id }}" {{ "selected" if id == selected_id else " " }}>
                             {{ id }}
                             </option>
                         {% endfor %}
