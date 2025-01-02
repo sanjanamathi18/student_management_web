@@ -10,24 +10,40 @@ class StudentManagementTestCase(unittest.TestCase):
         self.app.testing = True
         self.client = self.app.test_client()
 
-    def test_home_page(self):
-        response = self.client.get("/")
+    def add_student(
+        self, name="Sanjana Mathiyalagan", age="20", grade="VG", subjects="Math, Science"
+    ):
+        response = self.client.post(
+            "/add",
+            data=dict(name=name, age=age, grade=grade, subjects=subjects),
+            follow_redirects=True,
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"WELCOME TO STUDENT MANAGEMENT", response.data)
-        self.assertIn(b"Add Student", response.data)
-        self.assertIn(b"View All Students", response.data)
-        self.assertIn(b"View Specific Student", response.data)
+        self.assertIsNotNone(response.data)
 
-    def test_add_student_get(self):
+    def table_exists(self):
+        response = self.client.get("/view_all_students")
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.data, "html.parser")
+
+        headers = [th.text for th in soup.find_all("th")]
+        self.assertEqual(headers, ["ID", "Name", "Age", "Grade", "Subjects", "Actions"])
+
+        rows = soup.find_all("tr")
+        self.assertGreater(len(rows), 1)
+
+    def form_exists(self):
         response = self.client.get("/add")
         self.assertEqual(response.status_code, 200)
         soup = BeautifulSoup(response.data, "html.parser")
+
         form = soup.find("form")
         self.assertIsNotNone(form)
         name_input = form.find("input", {"id": "name"})
         self.assertIsNotNone(name_input)
 
-        age_input = form.find("input", {"id": "age"})
+        age_input = form.find("input", {"id": "age"}, {"type": "number"})
         self.assertIsNotNone(age_input)
 
         grade_select = form.find("select", {"id": "grade"})
@@ -39,50 +55,79 @@ class StudentManagementTestCase(unittest.TestCase):
         submit_button = form.find("button", {"type": "submit"})
         self.assertIsNotNone(submit_button)
 
+    def test_home_page(self):
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"WELCOME TO STUDENT MANAGEMENT", response.data)
+        self.assertIn(b"Add Student", response.data)
+        self.assertIn(b"View All Students", response.data)
+        self.assertIn(b"View Specific Student", response.data)
+
+    def test_add_student_get(self):
+        self.form_exists()
+
     def test_add_student_post(self):
         response = self.client.post(
             "/add",
-            data=dict(name="John Doe", age="20", grade="A", subjects="Math, Science"),
+            data=dict(name="Sanjana Mathiyalagan", age="20", grade="VG", subjects="Math, Science"),
             follow_redirects=True,
         )
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data)
 
     def test_view_all_students(self):
-        # Add a student to the database
-        self.client.post(
-            "/add",
-            data=dict(name="John Doe", age="20", grade="A", subjects="Math, Science"),
-            follow_redirects=True,
-        )
-
-        # Get the view all students page
+        self.table_exists()
+        self.add_student(age=25)
         response = self.client.get("/view_all_students")
-        self.assertEqual(response.status_code, 200)
-
-        # Parse the HTML
         soup = BeautifulSoup(response.data, "html.parser")
 
-        # Check the table headers
-        headers = [th.text for th in soup.find_all("th")]
-        self.assertEqual(headers, ["ID", "Name", "Age", "Grade", "Subjects", "Actions"])
-
-        # Check the student data
         rows = soup.find_all("tr")
-        self.assertGreater(len(rows), 1)  # There should be at least one student row
-
-        # Check the first student row
         columns = [td.text for td in rows[1].find_all("td")]
-        self.assertEqual(columns[1], "John Doe")  # The name should be "John Doe"
-        self.assertEqual(columns[2], "20")  # The age should be "20"
-        self.assertEqual(columns[3], "A")  # The grade should be "A"
-        self.assertEqual(columns[4], "Math, Science")  # The subjects should be "Math, Science"
+        self.assertEqual(columns[1], "Sanjana Mathiyalagan")
+        self.assertEqual(columns[2], "25")
+        self.assertEqual(columns[3], "VG")
+        self.assertEqual(columns[4], "Math, Science")
 
-        # Check the update and delete buttons
         update_button = rows[1].find("button", string="Update")
         self.assertIsNotNone(update_button)
         delete_button = rows[1].find("button", string="Delete")
         self.assertIsNotNone(delete_button)
+
+    def test_update_student(self):
+        self.form_exists()
+        self.table_exists()
+        self.add_student(name="Sanjana")
+        response = self.client.get("/update_student/1")
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(
+            "/update_student/1",
+            data=dict(name="Vimal", age="20", grade="VG", subjects="Math, Science"),
+            follow_redirects=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data)
+        soup = BeautifulSoup(response.data, "html.parser")
+        rows = soup.find_all("tr")
+        columns = [td.text for td in rows[1].find_all("td")]
+        self.assertEqual(columns[1], "Vimal")
+        self.assertEqual(columns[2], "20")
+        self.assertEqual(columns[3], "VG")
+        self.assertEqual(columns[4], "Math, Science")
+
+    def test_delete_student(self):
+        self.form_exists()
+        self.table_exists()
+        self.add_student(name="Shan")
+        response = self.client.get("/delete_student/1")
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(
+            "/delete_student/1",
+            data=dict(argument="true"),
+            follow_redirects=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data)
+        self.assertIn(b"No students found.", response.data)
 
     def tearDown(self):
         if os.path.exists("test.db"):
