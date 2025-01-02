@@ -10,16 +10,13 @@ class StudentManagementTestCase(unittest.TestCase):
         self.app.testing = True
         self.client = self.app.test_client()
 
-    def add_student(
-        self, name="Sanjana Mathiyalagan", age="20", grade="VG", subjects="Math, Science"
-    ):
-        response = self.client.post(
-            "/add",
-            data=dict(name=name, age=age, grade=grade, subjects=subjects),
-            follow_redirects=True,
-        )
+    def home_page(self):
+        response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(response.data)
+        self.assertIn(b"WELCOME TO STUDENT MANAGEMENT", response.data)
+        self.assertIn(b"Add Student", response.data)
+        self.assertIn(b"View All Students", response.data)
+        self.assertIn(b"View Specific Student", response.data)
 
     def table_exists(self):
         response = self.client.get("/view_all_students")
@@ -55,13 +52,19 @@ class StudentManagementTestCase(unittest.TestCase):
         submit_button = form.find("button", {"type": "submit"})
         self.assertIsNotNone(submit_button)
 
-    def test_home_page(self):
-        response = self.client.get("/")
+    def add_student(
+        self, name="Sanjana Mathiyalagan", age="20", grade="VG", subjects="Math, Science"
+    ):
+        response = self.client.post(
+            "/add",
+            data=dict(name=name, age=age, grade=grade, subjects=subjects),
+            follow_redirects=True,
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"WELCOME TO STUDENT MANAGEMENT", response.data)
-        self.assertIn(b"Add Student", response.data)
-        self.assertIn(b"View All Students", response.data)
-        self.assertIn(b"View Specific Student", response.data)
+        self.assertIsNotNone(response.data)
+
+    def test_home_page(self):
+        self.home_page()
 
     def test_add_student_get(self):
         self.form_exists()
@@ -93,10 +96,29 @@ class StudentManagementTestCase(unittest.TestCase):
         delete_button = rows[1].find("button", string="Delete")
         self.assertIsNotNone(delete_button)
 
+    def test_view_specific_student(self):
+        self.home_page()
+        self.form_exists()
+        self.table_exists()
+        self.add_student()
+        self.add_student("Vimal")
+        response = self.client.post(
+            "/view_specific_student",
+            data=dict(ID=1),
+            follow_redirects=True,
+        )
+        soup = BeautifulSoup(response.data, "html.parser")
+        paragraphs = [p.get_text() for p in soup.find_all("p")]
+        self.assertIn("ID: 1", paragraphs)
+        self.assertIn("Name: Sanjana Mathiyalagan", paragraphs)
+        self.assertIn("Age: 20", paragraphs)
+        self.assertIn("Grade: VG", paragraphs)
+        self.assertIn("Subjects: Math, Science", paragraphs)
+
     def test_update_student(self):
         self.form_exists()
         self.table_exists()
-        self.add_student(name="Sanjana")
+        self.add_student()
         response = self.client.get("/update_student/1")
         self.assertEqual(response.status_code, 200)
         response = self.client.post(
