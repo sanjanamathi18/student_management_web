@@ -12,7 +12,6 @@ class StudentManager:
                 cursor = conn.cursor()
                 cursor.execute(command)
                 conn.commit()
-                # print("Command executed successfully.")
         except sqlite3.OperationalError as e:
             raise RuntimeError("Failed to execute command: ", e)
 
@@ -31,9 +30,7 @@ class StudentManager:
             with sqlite3.connect(self.file_name) as conn:
                 cursor = conn.cursor()
                 result = cursor.execute(command)
-                # print("Command executed successfully.")
                 return result.fetchall()
-
         except sqlite3.OperationalError as e:
             raise RuntimeError("Failed to execute command: ", e)
 
@@ -47,9 +44,9 @@ class StudentManager:
 
     def load_data(self):
         command = "SELECT * FROM Students"
-        data = self.read_command(command)
+        datas = self.read_command(command)
         students = []
-        for data in data:
+        for data in datas:
             students.append(self.create_student_from_sql(data))
         return students
 
@@ -80,7 +77,7 @@ class StudentManager:
         return result[0][0]
 
     def get_id_list(self):
-        sql = "SELECT DISTINCT ID FROM Students;"
+        sql = "SELECT DISTINCT ID FROM Students"
         result = self.read_command(sql)
         id_list = [ids[0] for ids in result]
         return id_list

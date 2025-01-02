@@ -11,12 +11,12 @@ class TestStudent(unittest.TestCase):
     def test_add_student(self):
         self.student_manager.add_student("Sanjana", 23, "VG", "Maths")
         students = self.student_manager.view_all_students()
-        self.assertIn("Sanjana", students[0]["Name"])
+        self.assertEqual("Sanjana", students[0]["Name"])
 
     def test_view_all_students(self):
         self.student_manager.add_student("Vimal", 23, "VG", "Maths")
         students = self.student_manager.view_all_students()
-        self.assertIn("Vimal", students[0]["Name"])
+        self.assertEqual("Vimal", students[0]["Name"])
 
     def test_view_specifik_student(self):
         self.student_manager.add_student("Shan", 23, "VG", "Maths")
@@ -31,6 +31,7 @@ class TestStudent(unittest.TestCase):
         self.student_manager.add_student("Shan", 23, "VG", "Maths")
         student_id = self.student_manager.get_id_list()
         id = student_id[0]
+        self.assertEqual(id, 1)
         self.student_manager.update_student(id, "San", 26, "Pass", "English")
         students = self.student_manager.view_all_students()
         self.assertEqual("San", students[0]["Name"])
@@ -52,8 +53,8 @@ class TestStudent(unittest.TestCase):
         student_id = self.student_manager.get_id_list()
         id = student_id[0]
         self.assertEqual(id, 1)
-        self.student_manager.get_student_name(id)
-        self.assertEqual("David", "David")
+        name = self.student_manager.get_student_name(id)
+        self.assertEqual(name, "David")
 
     def test_get_id_list(self):
         self.student_manager.add_student("Sanju", 23, "VG", "Maths")
