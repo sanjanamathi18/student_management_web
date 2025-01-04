@@ -46,6 +46,7 @@ def create_app(database_file):
 
     @app.route("/update_student/<int:id>", methods=["GET", "POST"])
     def update_student(id):
+        specific_student = student_manager.view_specifik_student(id)
         if request.method == "POST":
             name = request.form["name"]
             age = request.form["age"]
@@ -53,7 +54,7 @@ def create_app(database_file):
             subjects = request.form["subjects"]
             student_manager.update_student(id, name, age, grade, subjects)
             return redirect(url_for("view_all_students"))
-        return render_template("update_student.html")
+        return render_template("update_student.html", specific_student=specific_student)
 
     @app.route("/delete_student/<int:id>", methods=["GET", "POST"])
     def delete_student(id):

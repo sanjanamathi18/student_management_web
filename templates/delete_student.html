@@ -2,10 +2,18 @@
 <html>
   <head>
     <title>Delete Student</title>
+    <style>
+      h2 {
+        font-family: 'Lucida Handwriting', cursive;
+        color: violet;
+      }
+    </style>
   </head>
   <body>
     <h2>Delete Student</h2>
-    <p>Are you sure you want to delete the student {{ name }}?</p>
+    <p>
+      Are you sure, you want to delete the student <strong><italics>{{ name }}</italics></strong> ?
+    </p>
     <form action="{{ url_for('delete_student', id=id) }}" method="POST">
       <input type="hidden" name="argument" value="true" />
       <input type="submit" value="Delete" />
