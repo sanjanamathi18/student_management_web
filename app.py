@@ -70,5 +70,5 @@ def create_app(database_file):
 
 
 if __name__ == "__main__":
-    app = create_app(FILE_NAME)
-    app.run(debug=True)
+    flask_app = create_app(FILE_NAME)
+    flask_app.run(debug=True)
