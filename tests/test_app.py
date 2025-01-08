@@ -70,6 +70,8 @@ class StudentManagementTestCase(unittest.TestCase):
         self.form_exists()
 
     def test_add_student_post(self):
+        self.home_page()
+        self.form_exists()
         response = self.client.post(
             "/add",
             data=dict(name="Sanjana Mathiyalagan", age="20", grade="VG", subjects="Math, Science"),
@@ -79,6 +81,7 @@ class StudentManagementTestCase(unittest.TestCase):
         self.assertIsNotNone(response.data)
 
     def test_view_all_students(self):
+        self.home_page()
         self.table_exists()
         self.add_student(age=25)
         response = self.client.get("/view_all_students")

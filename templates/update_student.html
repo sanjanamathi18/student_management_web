@@ -2,27 +2,52 @@
 <html>
   <head>
     <title>Update student</title>
+    <style>
+      h2 {
+        font-family: 'Lucida Handwriting', cursive;
+        color: green;
+      }
+    </style>
   </head>
   <body>
+    <h2>Current details</h2>
+    <p>
+      <strong>ID:</strong> {{ specific_student.ID }}
+    </p>
+    <p>
+      <strong>Name:</strong> {{ specific_student.Name }}
+    </p>
+    <p>
+      <strong>Age:</strong> {{ specific_student.Age }}
+    </p>
+    <p>
+      <strong>Grade:</strong> {{ specific_student.Grade }}
+    </p>
+    <p>
+      <strong>Subjects:</strong> {{ specific_student.Subjects }}
+    </p>
     <h2>Enter student detail</h2>
     <form method="POST">
-      Name:<input type="text" id="name" name="name" required />
+      <strong>Name:</strong><input type="text" id="name" name="name" required />
       <br />
       <br />
-      Age:<input type="number" id="age" name="age" required />
+      <strong>Age:</strong><input type="number" id="age" name="age" required />
       <br />
       <br />
-      Grade:<select name="grade" id="grade">
+      <strong>Grade:</strong><select name="grade" id="grade" required>
+        <option value="">Select an Option</option>
         <option value="IG">IG</option>
         <option value="G">G</option>
         <option value="VG">VG</option>
       </select>
       <br />
       <br />
-      Subjects:<input type="text" id="subjects" name="subjects" required /><br />
+      <strong>Subjects:</strong> <input type="text" id="subjects" name="subjects" required />
       <br />
       <br />
-      <button type="submit" onclick="return confirm('Student details updated successfully.')">Update</button>
+      <button type="submit">Update</button>
     </form>
   </body>
+  <br />
+  <a href="/view_all_students">Back</a>
 </html>
