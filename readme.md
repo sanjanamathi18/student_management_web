@@ -62,7 +62,9 @@ To run this system, ensure the following dependencies are installed:
 
 3. Start the Flask server:
    ```
-   python3 app.py
+   python3 app.py 
+
+   Or click RUN button
    ```
 
 4. Open your web browser and navigate to:
